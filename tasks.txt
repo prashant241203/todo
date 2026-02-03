@@ -4,11 +4,11 @@ Task priority system (High / Medium / Low) ✅
 
 Due date & overdue task highlight
 
-Task search & filter
+Task search & filter  ✅
 
 Task pagination
 
-Task sorting (date / priority)
+Task sorting (date / priority)  ✅
 
 Soft delete (Trash) for tasks
 

@@ -114,7 +114,7 @@
     }
 
     $fetchdata = $conn->prepare("SELECT tasks.id, tasks.title, tasks.deadline, tasks.status,tasks.priority, category.name FROM tasks LEFT JOIN category ON tasks.category_id = category.id
-    WHERE tasks.user_id = ? ORDER BY tasks.deadline ASC");
+    WHERE tasks.user_id = ? ORDER BY  FIELD(tasks.priority , 'High' , 'Medium' , 'Low') ASC , tasks.deadline ASC");
 
     $fetchdata->bind_param("i",$userid);
     $fetchdata->execute();  

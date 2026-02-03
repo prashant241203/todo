@@ -12,7 +12,7 @@
    
    $params = [$userid];
    $types = "i";
-    
+        
    if ($category !== "") {
         $filterquery .= " AND c.name = ?";
         $params[] = $category;

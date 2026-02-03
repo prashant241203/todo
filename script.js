@@ -11,7 +11,7 @@ document.addEventListener('click',function(e){
     card.querySelectorAll("button").forEach(btn => {
         btn.disabled = true;
     }); 
-        
+            
     let title = card.querySelector("h3");
     title.style.textDecoration = "line-through";
     title.style.color = "grey";
