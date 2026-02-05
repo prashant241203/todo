@@ -2,16 +2,16 @@ Task categories (Work / Personal / Urgent)  ✅
 
 Task priority system (High / Medium / Low) ✅
 
-Due date & overdue task highlight
+Due date & overdue task highlight ✅ --05/02/2026
 
 Task search & filter  ✅
 
-Task pagination
+Task pagination ✅ --05/02/2026
 
 Task sorting (date / priority)  ✅
 
-Soft delete (Trash) for tasks
+Soft delete (Trash) for tasks ✅ --05/02/2026
 
-Restore deleted tasks
+Restore deleted tasks ✅ --05/02/2026
 
-Task activity log
+Task activity log   

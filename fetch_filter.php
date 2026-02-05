@@ -18,7 +18,7 @@
         $params[] = $category;
         $types .= "s";
    }
-
+    
    if ($priority !== "") {
         $filterquery .= " AND t.priority = ?";
         $params[] = $priority;
@@ -36,7 +36,7 @@
    $query->execute();
    $result = $query->get_result();
 
-   if ($result->num_rows > 0) {
+   if($result->num_rows > 0) {
    while ($row = $result->fetch_assoc()) {
         $style = ($row['status'] === 'complete')
             ? "text-decoration:line-through;color:gray;"

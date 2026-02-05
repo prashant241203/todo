@@ -12,7 +12,7 @@
       
       $email = $_POST['email'];
 
-      if (empty($email)){
+      if(empty($email)){
            $emptyemail =  "Enter email address";
       }else{
           $query = $conn->prepare("SELECT id,email FROM users WHERE email = ?");

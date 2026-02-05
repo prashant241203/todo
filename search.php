@@ -14,7 +14,7 @@
         $searchquery->bind_param("is",$userid,$search);
         $searchquery->execute();  
         $searchresult = $searchquery->get_result();
-
+    
 if ($searchresult->num_rows > 0) {
     while ($row = $searchresult->fetch_assoc()) {
         $style = ($row['status'] === 'complete')

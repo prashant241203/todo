@@ -8,7 +8,7 @@
     }
     
     $email = $_SESSION['user_email']; 
-
+  
     $fetchemail = $conn->prepare("SELECT id,name FROM users WHERE email = ?");
     $fetchemail->bind_param("s",$email);
     $fetchemail->execute();
@@ -23,6 +23,7 @@
         die("user not found");
    }
 
+    
     $msg = [];
     if (isset($_POST['addtask'])) {
          
@@ -31,7 +32,7 @@
             $categoryname = $_POST['category'];
             $priority = $_POST['priority'];
               
-            if (empty($title)) {
+            if(empty($title)) {
              $msg['title'] = "please enter title";
             }else if(empty($deadline)){
               $msg['deadline'] =  "select deadline";
@@ -72,7 +73,8 @@
     if (isset($_POST['delete'])) {
         
       $id = $_POST['id'];
-      $query = $conn->prepare("DELETE FROM tasks WHERE id = ? AND user_id = ?");
+      
+      $query = $conn->prepare("UPDATE tasks SET is_deleted = 1 WHERE id = ? AND user_id = ?");
       $query->bind_param("ii",$id,$userid);
       $query->execute();   
     }
@@ -97,10 +99,10 @@
     if(isset($_POST['update'])){
 
           $editid = $_POST['id'];
-          $query = $conn->prepare("SELECT title,deadline,category_id,priority FROM tasks WHERE id = ? AND user_id = ?");
-          $query->bind_param("ii",$editid,$userid);
+          $query = $conn->prepare("SELECT title,deadline,category_id,priority FROM tasks WHERE id = ? AND user_id = ? AND is_deleted = 0 ");
+          $query->bind_param("ii",$editid,$userid); 
           $query->execute();
-
+          
           $row = $query->get_result()->fetch_assoc(); 
 
           $edittitle = $row['title'];
@@ -113,13 +115,18 @@
           $editcategory = $catequery->get_result()->fetch_assoc()['name'];
     }
 
+    $limit = 2;
+
+    $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    $offset = ($page - 1) * $limit;
+
     $fetchdata = $conn->prepare("SELECT tasks.id, tasks.title, tasks.deadline, tasks.status,tasks.priority, category.name FROM tasks LEFT JOIN category ON tasks.category_id = category.id
-    WHERE tasks.user_id = ? ORDER BY  FIELD(tasks.priority , 'High' , 'Medium' , 'Low') ASC , tasks.deadline ASC");
+    WHERE tasks.user_id = ? AND tasks.is_deleted = 0  ORDER BY  FIELD(tasks.priority , 'High' , 'Medium' , 'Low') ASC , tasks.deadline ASC LIMIT $offset,$limit");
 
     $fetchdata->bind_param("i",$userid);
     $fetchdata->execute();  
     $result = $fetchdata->get_result();
-   
+
 ?>
 
 <!DOCTYPE html>
@@ -139,6 +146,7 @@
       <a href="index.php">Tasks</a>
       <a href="profile.php">Profile</a>
       <a href="logout.php">Logout</a>
+      <a href="deletedtask.php">Deleted Tasks</a>
     </div>
 
   <div class="main">
@@ -179,7 +187,7 @@
         <h3 class="welcome-text">Welcome <?= $username ?></h3>
     </div>
 </div>
-
+    
     <form class="add-task" style="margin-bottom:30px;" method="post">
          
          <?php if(isset($msg['title'])): ?>
@@ -220,10 +228,20 @@
         
  <div id="all_tasks">
   <?php  while($row = $result->fetch_assoc()){  ?>  
-        
+          
     <div class="task-list" style="margin-top:20px;">
-      <div class="task-card">
-
+       <?php
+          $today_date = date('Y-m-d');
+          $overduedate = ($row['deadline'] < $today_date);
+          
+          if ($row['status'] == 'complete'){
+               $bgColor = '#d9d9d9';
+          }else{
+               $bgColor = $overduedate ? '#ffcfcf' : '#ccffcc';
+          }
+        ?> 
+        
+      <div class="task-card" style="background-color:<?= $bgColor ?>">
         <h3 style="<?= ($row['status'] == 'complete') ? 'text-decoration:line-through;color:gray;' : '' ?>"><?= $row['title']?></h3>
         <p>Deadline : <?= $row['deadline']?></p>
         <p>Category : <?= $row['name']?></p>
@@ -237,10 +255,27 @@
               <button style="<?= ($row['status'] == 'complete') ? 'background:#bfbfbf;' : '' ?>"  type="submit" class="deleteBtn delete" name="delete" <?= ($row['status'] == 'complete') ? 'disabled' : '' ?>>Delete</button>
             </div> 
         </form>  
-    </div>
+      </div>
  </div>
      <?php } ?>
+     <?php 
+
+        $totalresult = $conn->prepare("SELECT COUNT(*) as total FROM tasks WHERE user_id = ? AND is_deleted = 0");
+        $totalresult->bind_param("i",$userid);
+        $totalresult->execute();
+        $totalrow = $totalresult->get_result()->fetch_assoc();
+
+        $totalrecords = $totalrow['total'];
+        $totalpages = ceil($totalrecords / $limit);
+
+        echo '<div class="mt-3" style="margin-top:20px;">';
+            for ($i = 1; $i <= $totalpages; $i++) {
+                echo '<a href="?page='.$i.'" class="pagination_a btn btn-sm btn-primary me-1">'.$i.'</a>';
+            }
+            echo '</div>';
+     ?>
    </div>
+   
   </div>
 </div>
 <script src="script.js"></script>

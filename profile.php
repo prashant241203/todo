@@ -16,7 +16,7 @@
     if ($result->num_rows == 0) { 
       echo "No user found";
     }
-     $row = $result->fetch_assoc();
+    $row = $result->fetch_assoc();
 
     if(isset($_POST['update'])){
 
@@ -58,6 +58,7 @@
     <a href="index.php">Tasks</a>
     <a href="profile.php">Profile</a>
     <a href="logout.php">Logout</a>
+    <a href="deletedtask.php">Deleted Tasks</a>
   </div>
   
   <div class="main">
